@@ -1,5 +1,5 @@
 from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtWidgets import QLineEdit,QApplication,QWidget, QPushButton, QMainWindow, QGridLayout
+from PyQt6.QtWidgets import QLineEdit,QApplication,QWidget, QPushButton, QMainWindow, QGridLayout, QHBoxLayout
 from PyQt6.QtGui import QColor, QPalette
 
 app = QApplication([])
@@ -63,10 +63,10 @@ class MainWindow(QMainWindow):
 """
 
 class MatrixGrid(QGridLayout):
-    def __init__(self, nr_rows, nr_columns):
+    def __init__(self, nr_rows, nr_columns, string_matrix):
         super().__init__()
 
-        strings = StringMatrix(nr_rows,nr_columns)
+        strings = string_matrix
         for i in range(nr_rows):
             for j in range(nr_columns):
                 self.addWidget(MatrixLine(i,j,strings),i,j)
@@ -99,12 +99,21 @@ class MainWindow(QMainWindow):
         layout.addWidget(MatrixLine(1,1, strings),1,1)
         layout.addWidget(MatrixLine(2,2, strings),2,2)
         """
-        layout = MatrixGrid(3,3)
+
+        strings = StringMatrix(3,3)
+        matrix = MatrixGrid(3,3, strings)
+        layout = QHBoxLayout()
+        layout.addLayout(matrix)
         
+        button = QPushButton()
+        button.clicked.connect(lambda pressed: self.show_matrix(strings,pressed))
+        layout.addWidget(button)
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
-        
+    
+    def show_matrix(self,matrix,pressed):
+        print(matrix.content)
 
 
     
