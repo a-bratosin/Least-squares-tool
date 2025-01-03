@@ -77,9 +77,11 @@ class SizeSelection(QHBoxLayout):
 
         label1 = QLabel("Nr de linii:")
         row_selector = QComboBox()
+        row_selector.insertItems(0, ["3","4","5","6"])
         label2 = QLabel("Nr de coloane:")
         column_selector = QComboBox()
-
+        column_selector.insertItems(0, ["3","4","5","6"])
+        
         self.addWidget(label1)
         self.addWidget(row_selector)
         self.addWidget(label2)
@@ -114,18 +116,22 @@ class MainWindow(QMainWindow):
 
         
         matrix = MatrixGrid(3,3)
-        layout = QHBoxLayout()
-        layout.addLayout(matrix)
         
-        button = QPushButton()
-        button.clicked.connect(lambda clicked: self.show_matrix(clicked,matrix))
-        layout.addWidget(button)
+        
+        
         
         frame = QVBoxLayout()
         test = SizeSelection()
         frame.addLayout(test)
-        frame.addLayout(layout)
+        frame.addLayout(matrix)
         
+        layout = QHBoxLayout()
+        layout.addLayout(frame)
+        
+        button = QPushButton()
+        button.clicked.connect(lambda clicked: self.show_matrix(clicked,matrix))
+        layout.addWidget(button)
+
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
