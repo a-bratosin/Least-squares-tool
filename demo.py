@@ -61,13 +61,17 @@ class MainWindow(QMainWindow):
         # Set the central widget of the Window.
         self.setCentralWidget(button)
 """
-"""
+
 class MatrixGrid(QGridLayout):
     def __init__(self, nr_rows, nr_columns):
         super().__init__()
 
-        strings = StringMatrix
-"""
+        strings = StringMatrix(nr_rows,nr_columns)
+        for i in range(nr_rows):
+            for j in range(nr_columns):
+                self.addWidget(MatrixLine(i,j,strings),i,j)
+
+
 
 class MainWindow(QMainWindow):
 
@@ -87,14 +91,16 @@ class MainWindow(QMainWindow):
         widget.textChanged.connect(self.text_changed)
         widget.textEdited.connect(self.text_edited)
         """
-
+        """
         layout = QGridLayout()
         strings = StringMatrix(3,3)
         layout.addWidget(MatrixLine(0,0, strings),0,0)
         layout.addWidget(MatrixLine(0,1, strings),0,1)
         layout.addWidget(MatrixLine(1,1, strings),1,1)
         layout.addWidget(MatrixLine(2,2, strings),2,2)
-
+        """
+        layout = MatrixGrid(3,3)
+        
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
