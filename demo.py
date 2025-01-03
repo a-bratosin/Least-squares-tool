@@ -1,5 +1,5 @@
 from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtWidgets import QLineEdit,QApplication,QWidget, QPushButton, QMainWindow, QGridLayout, QHBoxLayout
+from PyQt6.QtWidgets import QLineEdit,QApplication,QWidget, QPushButton, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QComboBox, QLabel
 from PyQt6.QtGui import QColor, QPalette
 
 app = QApplication([])
@@ -63,15 +63,27 @@ class MainWindow(QMainWindow):
 """
 
 class MatrixGrid(QGridLayout):
-    def __init__(self, nr_rows, nr_columns, string_matrix):
+    def __init__(self, nr_rows, nr_columns):
         super().__init__()
 
-        strings = string_matrix
+        self.strings = StringMatrix(nr_rows,nr_columns)
         for i in range(nr_rows):
             for j in range(nr_columns):
-                self.addWidget(MatrixLine(i,j,strings),i,j)
+                self.addWidget(MatrixLine(i,j,self.strings),i,j)
 
+class SizeSelection(QHBoxLayout):
+    def __init__(self):
+        super().__init__()
 
+        label1 = QLabel("Nr de linii:")
+        row_selector = QComboBox()
+        label2 = QLabel("Nr de coloane:")
+        column_selector = QComboBox()
+
+        self.addWidget(label1)
+        self.addWidget(row_selector)
+        self.addWidget(label2)
+        self.addWidget(column_selector)
 
 class MainWindow(QMainWindow):
 
@@ -100,20 +112,28 @@ class MainWindow(QMainWindow):
         layout.addWidget(MatrixLine(2,2, strings),2,2)
         """
 
-        strings = StringMatrix(3,3)
-        matrix = MatrixGrid(3,3, strings)
+        
+        matrix = MatrixGrid(3,3)
         layout = QHBoxLayout()
         layout.addLayout(matrix)
         
         button = QPushButton()
-        button.clicked.connect(lambda pressed: self.show_matrix(strings,pressed))
+        button.clicked.connect(lambda clicked: self.show_matrix(clicked,matrix))
         layout.addWidget(button)
+        
+        frame = QVBoxLayout()
+        test = SizeSelection()
+        frame.addLayout(test)
+        frame.addLayout(layout)
+        
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
+
+
     
-    def show_matrix(self,matrix,pressed):
-        print(matrix.content)
+    def show_matrix(self,clicked, matrix):
+        print(matrix.strings.content)
 
 
     
