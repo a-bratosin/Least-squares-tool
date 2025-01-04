@@ -66,26 +66,148 @@ class MatrixGrid(QGridLayout):
     def __init__(self, nr_rows, nr_columns):
         super().__init__()
 
+        self.rows = nr_rows
+        self.columns = nr_columns
         self.strings = StringMatrix(nr_rows,nr_columns)
         for i in range(nr_rows):
             for j in range(nr_columns):
                 self.addWidget(MatrixLine(i,j,self.strings),i,j)
+    
+    def resize_matrix(self, new_rows=-1, new_columns=-1):
+        if(new_rows==-1):
+            new_rows = self.rows
+        if(new_columns==-1):
+            new_columns = self.columns
+        
+        if(new_rows>self.rows):
+            self.add_rows(new_rows)
+        if(new_rows<self.rows):
+            self.remove_rows(new_rows)
+
+        if(new_columns>self.columns):
+            self.add_columns(new_columns)
+        if(new_columns<self.columns):
+            self.remove_columns(new_columns)
+        
+        # TODO: să modific și matricea cu conținutul matricei
+
+        self.resize_contents(new_rows, new_columns)
+
+        self.rows = new_rows
+        self.columns = new_columns
+        
+        print("linii noi: ", self.rows, " coloane noi: ", self.columns)
+
+    def resize_contents(self, new_rows, new_columns):
+        new_strings = [["" for x in range(new_columns)] for y in range(new_rows)]
+
+        for i in range(min(self.rows, new_rows)):
+            for j in range(min(self.columns, new_columns)):
+                new_strings[i][j] = self.strings.content[i][j]
+        
+        self.strings.content = new_strings
+
+    # aici asum că new_rows> rows
+    def add_rows(self,new_rows):
+        if(new_rows <= self.rows):
+            print("Programul încearcă să mărească nr. de linii cu un nr mai mic decât cel existent!")
+            return
+        for i in range(self.rows, new_rows):
+            for j in range(self.columns):
+                self.addWidget(MatrixLine(i,j, self.strings), i,j)
+
+    def remove_rows(self, new_rows):
+        if(new_rows >= self.rows):
+            print("Programul încearcă să scadă nr. de linii cu un nr mai mare decât cel existent!")
+            return
+        for i in range(self.rows-1, new_rows-1, -1):
+            for j in range(self.columns):
+                element_to_delete = self.itemAtPosition(i,j)
+                element_to_delete.widget().hide()
+                self.removeItem(element_to_delete)
+
+    def add_columns(self,new_columns):
+        if(new_columns <= self.columns):
+            print("Programul încearcă să mărească nr. de coloane cu un nr mai mic decât cel existent!")
+            print("Coloane noi: ",new_columns," Coloane vechi:",self.rows)
+            return
+        for j in range(self.columns, new_columns):
+            for i in range(self.rows):
+                self.addWidget(MatrixLine(i,j, self.strings), i,j)
+
+    def remove_columns(self, new_columns):
+        if(new_columns >= self.columns):
+            print("Programul încearcă să scadă nr. de coloane cu un nr mai mare decât cel existent!")
+            return
+        for j in range(self.columns-1, new_columns-1, -1):
+            for i in range(self.rows):
+                element_to_delete = self.itemAtPosition(i,j)
+                element_to_delete.widget().hide()
+                self.removeItem(element_to_delete)
+    
 
 class SizeSelection(QHBoxLayout):
-    def __init__(self):
+    def __init__(self, wrapper):
         super().__init__()
+
+        self.wrapper = wrapper
 
         label1 = QLabel("Nr de linii:")
         row_selector = QComboBox()
-        row_selector.insertItems(0, ["3","4","5","6"])
+        row_selector.insertItems(0, ["2","3","4","5","6"])
+        row_selector.setCurrentIndex(1)
+        row_selector.textActivated.connect(lambda text: self.update_matrix_size(new_rows=text))
         label2 = QLabel("Nr de coloane:")
-        column_selector = QComboBox()
-        column_selector.insertItems(0, ["3","4","5","6"])
         
+        column_selector = QComboBox()
+        column_selector.insertItems(0, ["2","3","4","5","6"])
+        column_selector.setCurrentIndex(1)
+        column_selector.textActivated.connect(lambda text: self.update_matrix_size(new_columns=text))
+
         self.addWidget(label1)
         self.addWidget(row_selector)
         self.addWidget(label2)
         self.addWidget(column_selector)
+    
+    def test(self, text):
+        print(text)
+    # funcție care funcționează atât pentru actualizarea rândurilor, cât și a coloanelor
+    def update_matrix_size(self, new_rows=-1, new_columns=-1):
+        # obține matricea din interiorul wrapper-ului pentru a putea extrage informații din ea
+        matrix = self.wrapper.itemAtPosition(0,0)
+
+        # dacă nr de linii nu este invocat, rămâne același
+        if new_rows == -1:
+            rows = matrix.rows
+            
+            columns = int(new_columns)
+            print("New column count: ", columns)
+        # idem pt coloane
+        if new_columns == -1:
+            columns = matrix.columns
+            
+            rows = int(new_rows)
+            print("New row count: ", rows)
+        
+        """
+        #matrix.itemAtPosition(1,1).widget().hide()
+        #matrix.removeItem(matrix.itemAtPosition(1,1))
+        #matrix.addWidget(MatrixLine(1,1,matrix.strings),1,1)
+        #matrix.addWidget(MatrixLine(1,1,matrix.strings),3,3)
+        matrix.itemAtPosition(0,2).widget().hide()
+        matrix.removeItem(matrix.itemAtPosition(0,2))
+        #matrix.addWidget(MatrixLine(0,2,matrix.strings),0,2)
+
+        matrix.itemAtPosition(1,2).widget().hide()
+        matrix.removeItem(matrix.itemAtPosition(1,2))
+        #matrix.addWidget(MatrixLine(1,2,matrix.strings),1,2)
+
+        matrix.itemAtPosition(2,2).widget().hide()
+        matrix.removeItem(matrix.itemAtPosition(2,2))
+        #matrix.addWidget(MatrixLine(2,2,matrix.strings),2,2)
+        """        
+
+        matrix.resize_matrix(rows, columns)
 
 class MainWindow(QMainWindow):
 
@@ -114,16 +236,17 @@ class MainWindow(QMainWindow):
         layout.addWidget(MatrixLine(2,2, strings),2,2)
         """
 
-        
+        # wrapper este un layout care are în interior doar matrix, și al cărui rol este de a facilita ștergerea și refacerea matricei după alegerea unei dimensiuni în drop-down
+        wrapper = QGridLayout()
         matrix = MatrixGrid(3,3)
-        
+        wrapper.addLayout(matrix,0,0)
         
         
         
         frame = QVBoxLayout()
-        test = SizeSelection()
+        test = SizeSelection(wrapper)
         frame.addLayout(test)
-        frame.addLayout(matrix)
+        frame.addLayout(wrapper)
         
         layout = QHBoxLayout()
         layout.addLayout(frame)
