@@ -1,7 +1,7 @@
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtWidgets import QLineEdit,QApplication,QWidget, QPushButton, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QComboBox, QLabel
 from PyQt6.QtGui import QColor, QPalette
-
+import numpy as np
 
 
 # matrice de stringuri, în care sunt scrise inițial elementele matricei
@@ -211,12 +211,12 @@ class SizeSelection(QHBoxLayout):
 
         matrix.resize_matrix(rows, columns)
 
-class MainWindow(QMainWindow):
+class QRInputWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("My App")
+        self.setWindowTitle("Least Squares Tool")
 
         widget = QLineEdit()
         widget.setMaxLength(20)
@@ -268,11 +268,14 @@ class MainWindow(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
-
     
     def show_matrix(self,clicked, matrix):
         print(matrix.strings.content)
+        print(to_numpy_array(matrix.strings.content))
 
 
-    
+def to_numpy_array(string_matrix):
+    numpy_matrix= np.asarray(string_matrix, dtype=float)
+
+    return numpy_matrix
 
