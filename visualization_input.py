@@ -2,7 +2,7 @@ from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtWidgets import QLineEdit,QApplication,QWidget, QPushButton, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QComboBox, QLabel
 from PyQt6.QtGui import QColor, QPalette
 
-app = QApplication([])
+
 
 # matrice de stringuri, în care sunt scrise inițial elementele matricei
 # apoi, când utilizatorul apasă ok, matricea este transformată în array de numpy, verificându-se dacă acest lucru este posibil
@@ -267,8 +267,3 @@ class MainWindow(QMainWindow):
 
     
 
-
-window = MainWindow()
-window.show()
-
-app.exec()
