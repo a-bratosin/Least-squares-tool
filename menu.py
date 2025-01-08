@@ -12,6 +12,8 @@ class MainMenu(QMainWindow):
         qt_vis = QPushButton("QR factorisation")
 
         qt_vis.setStyleSheet("padding: 10px;")
+        qt_vis.clicked.connect(self.open_qr_input)
+
         lstsq = QPushButton("Least Squares Solver")
         lstsq.setStyleSheet("padding: 10px;")
         kzmr = QPushButton("Kaczmarz vs QR factorization")
@@ -29,6 +31,11 @@ class MainMenu(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
+    def open_qr_input(self):
+        self.hide()
+
+        w = QRInputWindow()
+        w.show()
 
     
 

@@ -1,5 +1,5 @@
 from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtWidgets import QLineEdit,QApplication,QWidget, QPushButton, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QComboBox, QLabel
+from PyQt6.QtWidgets import QDialog, QLineEdit,QApplication,QWidget, QPushButton, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QComboBox, QLabel, QDialogButtonBox
 from PyQt6.QtGui import QColor, QPalette
 import numpy as np
 
@@ -13,7 +13,24 @@ class StringMatrix:
     def display_elements(self):
         print(self.content)
         
-       
+
+class ErrorDialog(QDialog):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Least Squares Tool")
+
+        QBtn = QDialogButtonBox.StandardButton.Close
+
+        self.buttonBox = QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        layout = QVBoxLayout()
+        message = QLabel("Eroare! Matrice introdusă incorect!")
+        layout.addWidget(message)
+        layout.addWidget(self.buttonBox)
+        self.setLayout(layout)
 
 class MatrixLine(QLineEdit):
     def __init__(self, row, column, matrix):
@@ -271,7 +288,16 @@ class QRInputWindow(QMainWindow):
     
     def show_matrix(self,clicked, matrix):
         print(matrix.strings.content)
-        print(to_numpy_array(matrix.strings.content))
+        try:
+            np_matrix = to_numpy_array(matrix.strings.content)
+
+            print(np_matrix)
+        except:
+            dlg = ErrorDialog()
+            
+        
+            dlg.exec()
+        
 
 
 def to_numpy_array(string_matrix):
