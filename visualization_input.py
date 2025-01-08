@@ -157,8 +157,10 @@ class SizeSelection(QHBoxLayout):
         row_selector.insertItems(0, ["2","3","4","5","6"])
         row_selector.setCurrentIndex(1)
         row_selector.textActivated.connect(lambda text: self.update_matrix_size(new_rows=text))
+        #row_selector.setStyleSheet("margin-right: 10px")
         label2 = QLabel("Nr de coloane:")
         
+        #label2.setStyleSheet("margin-left: 10px")
         column_selector = QComboBox()
         column_selector.insertItems(0, ["2","3","4","5","6"])
         column_selector.setCurrentIndex(1)
@@ -245,15 +247,22 @@ class MainWindow(QMainWindow):
         
         frame = QVBoxLayout()
         test = SizeSelection(wrapper)
+        test.setContentsMargins(10,10,10,10)
         frame.addLayout(test)
         frame.addLayout(wrapper)
         
-        layout = QHBoxLayout()
+        layout = QVBoxLayout()
         layout.addLayout(frame)
         
-        button = QPushButton()
+        button = QPushButton("Ok")
         button.clicked.connect(lambda clicked: self.show_matrix(clicked,matrix))
-        layout.addWidget(button)
+        button.setStyleSheet("margin: 10px; alignment: center;")
+        button.setMaximumWidth(150)
+        button.setMinimumHeight(45)
+        button.setMinimumWidth(100)
+        #button.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(button, alignment=Qt.AlignmentFlag.AlignCenter)
+
 
         widget = QWidget()
         widget.setLayout(layout)
