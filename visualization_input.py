@@ -1,3 +1,4 @@
+from qr_visualization import QRVisualization
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtWidgets import QDialog, QLineEdit,QApplication,QWidget, QPushButton, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QComboBox, QLabel, QDialogButtonBox
 from PyQt6.QtGui import QColor, QPalette
@@ -291,7 +292,11 @@ class QRInputWindow(QMainWindow):
         try:
             np_matrix = to_numpy_array(matrix.strings.content)
 
-            print(np_matrix)
+            self.hide()
+
+            w = QRVisualization()
+            w.show()
+            # print(np_matrix)
         except:
             dlg = ErrorDialog()
             
