@@ -31,7 +31,7 @@ def alg_kaczmarz_cyclic(A, b, lsq_sol,  tol, maxiter=-1):
         
         # aici fac cu iterare ciclică asupra liniilor matricei
         i = k%m
-        print(i)
+        #print(i)
 
         
         #print(A[i,:])
@@ -111,8 +111,8 @@ def alg_kaczmarz_random(A,b,tol, maxiter=-1):
     return x,k,t1
 
 
-A = 20*(np.random.rand(3,3)-0.5)
-b = 20*(np.random.rand(3)-0.5)
+A = 20*(np.random.rand(200,300)-0.5)
+b = 20*(np.random.rand(200)-0.5)
 print(np.shape(A))
 print(np.shape(b))
 
