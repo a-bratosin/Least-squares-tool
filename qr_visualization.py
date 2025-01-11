@@ -31,7 +31,10 @@ def Utris(U, b):
 # alg de triangulatizare ortogonală cu reflectori
 def TORT_with_steps(A):
     (m, n) = np.shape(A)
-    p = min(m - 1, n)
+    if(m==n): 
+        p=m
+    else:
+        p = min(m - 1, n)
     beta = np.zeros(p)
     beta = beta.astype(float)
     # matricea ce stochează toți vectorii u(k)
@@ -39,6 +42,7 @@ def TORT_with_steps(A):
     # pentru sisteme supradeterminate, U o să aibă dimensiunile (m,n)
     U = np.zeros((m, p))
     U = U.astype(float)
+    print(np.shape(U))
 
     for k in range(p):
         sigma = np.sign(A[k][k]) * LA.norm(A[k:, k])
@@ -149,8 +153,8 @@ class QRVisualization(QMainWindow):
             self.next_button.setEnabled(False)
 
 
-# if __name__ == "__main__":
-#     app = QApplication(sys.argv)
-#     window = QRVisualization()
-#     window.show()
-#     sys.exit(app.exec())
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = QRVisualization()
+    window.show()
+    sys.exit(app.exec())
