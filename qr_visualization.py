@@ -28,7 +28,7 @@ def Utris(U, b):
     return x
 
 
-# alg de triangulatizare ortogonală cu reflectori
+# Alg de triangulatizare ortogonală cu reflectori
 def TORT_with_steps(A):
     (m, n) = np.shape(A)
     if(m==n): 
@@ -37,9 +37,9 @@ def TORT_with_steps(A):
         p = min(m - 1, n)
     beta = np.zeros(p)
     beta = beta.astype(float)
-    # matricea ce stochează toți vectorii u(k)
-    # are dimensiunile mxp deoarece înmagazinează p vectori de lungime m, generând un vector pentru fiecare iterație a algoritmului
-    # pentru sisteme supradeterminate, U o să aibă dimensiunile (m,n)
+    # Matricea ce stochează toți vectorii u(k)
+    # Are dimensiunile mxp deoarece înmagazinează p vectori de lungime m, generând un vector pentru fiecare iterație a algoritmului
+    # Pentru sisteme supradeterminate, U o să aibă dimensiunile (m,n)
     U = np.zeros((m, p))
     U = U.astype(float)
     print(np.shape(U))
@@ -51,7 +51,7 @@ def TORT_with_steps(A):
             beta[k] = 0
         else:
             U[k][k] = A[k][k] + sigma
-            # stocăm coeficienții vectorului uk pentru restul coloanei
+            # Stocam coeficienții vectorului uk pentru restul coloanei
             for i in range(k + 1, m):
                 U[i][k] = A[i][k]
 
@@ -78,9 +78,11 @@ def TORT_with_steps(A):
 
 
 class QRVisualization(QMainWindow):
-    def __init__(self):
+    def __init__(self, matrix):
         super().__init__()
         self.setWindowTitle("QR Algorithm Visualization")
+        #Preia matricea de la 
+        self.matrix = matrix
 
         # Componente UI
         self.central_widget = QWidget()
@@ -109,10 +111,6 @@ class QRVisualization(QMainWindow):
 
         # conectam senmnalul de click al butonului cu metoda next step
         self.next_button.clicked.connect(self.next_step)
-
-        # Example matrix
-        # TODO: preia matrice de la visualization_input.py
-        self.matrix = rng.integers(1, 11, size=(8, 8)).astype(float)
         
         #se initializeaza algoritmul
         self.reset_algorithm()

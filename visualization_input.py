@@ -235,6 +235,8 @@ class QRInputWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Least Squares Tool")
+        
+        self.qr_window = None
 
         widget = QLineEdit()
         widget.setMaxLength(20)
@@ -291,17 +293,16 @@ class QRInputWindow(QMainWindow):
         print(matrix.strings.content)
         try:
             np_matrix = to_numpy_array(matrix.strings.content)
-
             self.hide()
 
-            w = QRVisualization()
-            w.show()
+            self.qr_window = QRVisualization(np_matrix)
+            self.qr_window.show()
             # print(np_matrix)
         except:
-            dlg = ErrorDialog()
-            
+            #dlg = ErrorDialog()
+            print("IDK")
         
-            dlg.exec()
+            #dlg.exec()
         
 
 
