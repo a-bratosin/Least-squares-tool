@@ -299,10 +299,8 @@ class QRInputWindow(QMainWindow):
             self.qr_window.show()
             # print(np_matrix)
         except:
-            #dlg = ErrorDialog()
-            print("IDK")
-        
-            #dlg.exec()
+            dlg = ErrorDialog()
+            dlg.exec()
         
 
 

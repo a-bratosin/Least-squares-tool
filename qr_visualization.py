@@ -35,14 +35,13 @@ def TORT_with_steps(A):
         p=m
     else:
         p = min(m - 1, n)
-    beta = np.zeros(p)
-    beta = beta.astype(float)
+
+    beta = np.zeros(p, dtype=float)
     # Matricea ce stochează toți vectorii u(k)
     # Are dimensiunile mxp deoarece înmagazinează p vectori de lungime m, generând un vector pentru fiecare iterație a algoritmului
     # Pentru sisteme supradeterminate, U o să aibă dimensiunile (m,n)
-    U = np.zeros((m, p))
-    U = U.astype(float)
-    print(np.shape(U))
+    U = np.zeros((m, p), dtype=float)
+    Q = np.eye(m, dtype=float)
 
     for k in range(p):
         sigma = np.sign(A[k][k]) * LA.norm(A[k:, k])
@@ -72,9 +71,17 @@ def TORT_with_steps(A):
 
                 for i in range(k, m):
                     A[i][j] = A[i][j] - tau * U[i][k]
-        yield np.copy(A), np.copy(U), np.copy(beta)
+        
+            u = U[k:, k]
+            v = u / LA.norm(u)
+            B = np.eye(m, dtype=float)
+            B[k:, k:] -= 2.0 * (v[:, None] @ v[None, :])  # B = I - 2vv^T
+            
+            Q = B @ Q
+        
+        yield np.copy(A), np.copy(U), np.copy(Q.T), np.copy(beta)
 
-    return A, U, beta
+    return A, U, Q.T, beta
 
 
 class QRVisualization(QMainWindow):
@@ -90,19 +97,29 @@ class QRVisualization(QMainWindow):
         self.step_label = QLabel("Step: 0") #afiseaza numarul curent al pasului
         self.matrix_table = QTableWidget() #afiseaza matricea A la fiecare pas
         
+        self.q_table = QTableWidget()
+        
         self.u_table = QTableWidget() #afiseaza vectorul U la fiecare pas
         
         self.next_button = QPushButton("Next Step") #buton pentru a avansa la pasul urmator
         
-        self.matrix_label = QLabel("Matrix A:")
+        self.matrix_label = QLabel("Matrix R:")
+        self.q_label = QLabel("Matrix Q:")
         self.u_label = QLabel("Matrix U:")
-
+        
         self.layout.addWidget(self.step_label)
+
         self.layout.addWidget(self.matrix_label)
         self.layout.addWidget(self.matrix_table)
+
+        self.layout.addWidget(self.q_label)
+        self.layout.addWidget(self.q_table)
+
         self.layout.addWidget(self.u_label)
         self.layout.addWidget(self.u_table)
+
         self.layout.addWidget(self.next_button)
+
         self.central_widget.setLayout(self.layout)
         self.setCentralWidget(self.central_widget)
 
@@ -135,21 +152,30 @@ class QRVisualization(QMainWindow):
         self.u_table.setColumnCount(cols)
         for i in range(rows):
             for j in range(cols):
-                item = QTableWidgetItem(str(U[i, j]))  # Convertește fiecare valoare în string
-                self.u_table.setItem(i, j, item)
+                # item = QTableWidgetItem(str(U[i, j]))
+                # self.u_table.setItem(i, j, item)
+                self.u_table.setItem(i, j, QTableWidgetItem(f"{U[i, j]:.4f}"))
 
+    def update_q_table(self, Q):
+        rows, cols = Q.shape
+        self.q_table.setRowCount(rows)
+        self.q_table.setColumnCount(cols)
+        for i in range(rows):
+            for j in range(cols):
+                self.q_table.setItem(i, j, QTableWidgetItem(f"{Q[i, j]:.4f}"))
 
     def next_step(self):
         try:
-            A, U, beta = next(self.qr_generator)
+            A, U, Q, beta = next(self.qr_generator)
             self.current_step += 1
             self.step_label.setText(f"Step: {self.current_step}")
             self.update_table(A)  # Visualize A
+            self.update_q_table(Q)
             self.update_u_table(U)  # Visualize U
+
         except StopIteration:
             self.step_label.setText("Algorithm complete!")
             self.next_button.setEnabled(False)
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
