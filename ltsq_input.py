@@ -1,4 +1,4 @@
-from qr_visualization import QRVisualization
+from least_squares import LTSQ_Visualization
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtWidgets import QDialog, QLineEdit,QApplication,QWidget, QPushButton, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QComboBox, QLabel, QDialogButtonBox
 from PyQt6.QtGui import QColor, QPalette
@@ -67,18 +67,6 @@ class MatrixLine(QLineEdit):
     def text_edited(self, s):
         print("Text edited...")
         print(s)
-        
-"""
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-
-        self.setWindowTitle("My App")
-        button = QPushButton("Press Me!")
-
-        # Set the central widget of the Window.
-        self.setCentralWidget(button)
-"""
 
 class MatrixGrid(QGridLayout):
     def __init__(self, nr_rows, nr_columns):
@@ -106,8 +94,6 @@ class MatrixGrid(QGridLayout):
             self.add_columns(new_columns)
         if(new_columns<self.columns):
             self.remove_columns(new_columns)
-        
-        # TODO: să modific și matricea cu conținutul matricei
 
         self.resize_contents(new_rows, new_columns)
 
@@ -172,7 +158,7 @@ class SizeSelection(QHBoxLayout):
 
         label1 = QLabel("Nr de linii:")
         row_selector = QComboBox()
-        row_selector.insertItems(0, ["2","3","4","5","6"])
+        row_selector.insertItems(0, ["2","3","4","5","6", "7", "8", "9", "10"])
         row_selector.setCurrentIndex(1)
         row_selector.textActivated.connect(lambda text: self.update_matrix_size(new_rows=text))
         #row_selector.setStyleSheet("margin-right: 10px")
@@ -180,7 +166,7 @@ class SizeSelection(QHBoxLayout):
         
         #label2.setStyleSheet("margin-left: 10px")
         column_selector = QComboBox()
-        column_selector.insertItems(0, ["2","3","4","5","6"])
+        column_selector.insertItems(0, ["2","3","4","5","6", "7", "8", "9", "10"])
         column_selector.setCurrentIndex(1)
         column_selector.textActivated.connect(lambda text: self.update_matrix_size(new_columns=text))
 
@@ -207,58 +193,23 @@ class SizeSelection(QHBoxLayout):
             columns = matrix.columns
             
             rows = int(new_rows)
-            print("New row count: ", rows)
-        
-        """
-        #matrix.itemAtPosition(1,1).widget().hide()
-        #matrix.removeItem(matrix.itemAtPosition(1,1))
-        #matrix.addWidget(MatrixLine(1,1,matrix.strings),1,1)
-        #matrix.addWidget(MatrixLine(1,1,matrix.strings),3,3)
-        matrix.itemAtPosition(0,2).widget().hide()
-        matrix.removeItem(matrix.itemAtPosition(0,2))
-        #matrix.addWidget(MatrixLine(0,2,matrix.strings),0,2)
-
-        matrix.itemAtPosition(1,2).widget().hide()
-        matrix.removeItem(matrix.itemAtPosition(1,2))
-        #matrix.addWidget(MatrixLine(1,2,matrix.strings),1,2)
-
-        matrix.itemAtPosition(2,2).widget().hide()
-        matrix.removeItem(matrix.itemAtPosition(2,2))
-        #matrix.addWidget(MatrixLine(2,2,matrix.strings),2,2)
-        """        
+            print("New row count: ", rows)    
 
         matrix.resize_matrix(rows, columns)
 
-class QRInputWindow(QMainWindow):
+class LtsqInputWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Least Squares Tool")
         
-        self.qr_window = None
+        self.ls_window = None
 
         widget = QLineEdit()
         widget.setMaxLength(20)
         widget.setPlaceholderText("Enter your text")
 
-        #widget.setReadOnly(True) # uncomment this to make readonly
-        """
-        widget.returnPressed.connect(self.return_pressed)
-        widget.selectionChanged.connect(self.selection_changed)
-        widget.textChanged.connect(self.text_changed)
-        widget.textEdited.connect(self.text_edited)
-        """
-        """
-        layout = QGridLayout()
-        strings = StringMatrix(3,3)
-        layout.addWidget(MatrixLine(0,0, strings),0,0)
-        layout.addWidget(MatrixLine(0,1, strings),0,1)
-        layout.addWidget(MatrixLine(1,1, strings),1,1)
-        layout.addWidget(MatrixLine(2,2, strings),2,2)
-        """
-
-        # wrapper este un layout care are în interior doar matrix, și al cărui rol este de a facilita ștergerea și refacerea matricei după alegerea unei dimensiuni în drop-down
         wrapper = QGridLayout()
         matrix = MatrixGrid(3,3)
         wrapper.addLayout(matrix,0,0)
@@ -295,8 +246,8 @@ class QRInputWindow(QMainWindow):
             np_matrix = to_numpy_array(matrix.strings.content)
             self.hide()
 
-            self.qr_window = QRVisualization(np_matrix)
-            self.qr_window.show()
+            self.ls_window = LTSQ_Visualization(np_matrix)
+            self.ls_window.show()
             # print(np_matrix)
         except:
             dlg = ErrorDialog()

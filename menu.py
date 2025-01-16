@@ -1,5 +1,6 @@
 from visualization_input import QRInputWindow
 from qr_visualization import QRVisualization
+from ltsq_input import LtsqInputWindow
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QLineEdit,QApplication,QWidget, QPushButton, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QComboBox, QLabel, QPushButton
@@ -16,6 +17,8 @@ class MainMenu(QMainWindow):
         qt_vis.clicked.connect(self.open_qr_input)
 
         lstsq = QPushButton("Least Squares Solver")
+        lstsq.clicked.connect(self.open_ltsq_input)
+
         lstsq.setStyleSheet("padding: 10px;")
         kzmr = QPushButton("Kaczmarz vs QR factorization")
         kzmr.setStyleSheet("padding: 10px;")
@@ -37,6 +40,12 @@ class MainMenu(QMainWindow):
 
         w = QRInputWindow()
         w.show()
+        
+    def open_ltsq_input(self):
+        self.hide()
+
+        w2 = LtsqInputWindow()
+        w2.show()
 
     
 
