@@ -1,4 +1,4 @@
-from qr_visualization import QRVisualization
+from least_squares import LTSQ_Visualization
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtWidgets import QDialog, QLineEdit,QApplication,QWidget, QPushButton, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QComboBox, QLabel, QDialogButtonBox
 from PyQt6.QtGui import QColor, QPalette
@@ -204,29 +204,12 @@ class LtsqInputWindow(QMainWindow):
 
         self.setWindowTitle("Least Squares Tool")
         
-        self.qr_window = None
+        self.ls_window = None
 
         widget = QLineEdit()
         widget.setMaxLength(20)
         widget.setPlaceholderText("Enter your text")
 
-        #widget.setReadOnly(True) # uncomment this to make readonly
-        """
-        widget.returnPressed.connect(self.return_pressed)
-        widget.selectionChanged.connect(self.selection_changed)
-        widget.textChanged.connect(self.text_changed)
-        widget.textEdited.connect(self.text_edited)
-        """
-        """
-        layout = QGridLayout()
-        strings = StringMatrix(3,3)
-        layout.addWidget(MatrixLine(0,0, strings),0,0)
-        layout.addWidget(MatrixLine(0,1, strings),0,1)
-        layout.addWidget(MatrixLine(1,1, strings),1,1)
-        layout.addWidget(MatrixLine(2,2, strings),2,2)
-        """
-
-        # wrapper este un layout care are în interior doar matrix, și al cărui rol este de a facilita ștergerea și refacerea matricei după alegerea unei dimensiuni în drop-down
         wrapper = QGridLayout()
         matrix = MatrixGrid(3,3)
         wrapper.addLayout(matrix,0,0)
@@ -263,8 +246,8 @@ class LtsqInputWindow(QMainWindow):
             np_matrix = to_numpy_array(matrix.strings.content)
             self.hide()
 
-            self.qr_window = QRVisualization(np_matrix)
-            self.qr_window.show()
+            self.ls_window = LTSQ_Visualization(np_matrix)
+            self.ls_window.show()
             # print(np_matrix)
         except:
             dlg = ErrorDialog()

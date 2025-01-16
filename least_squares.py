@@ -10,8 +10,11 @@ from PyQt6.QtWidgets import (
     QTableWidget,
     QTableWidgetItem,
 )
+import sys
 
+rng = np.random.default_rng(5)
 
+# Algoritmul UTRIS
 def Utris(U, b):
     n = len(U)
     x = np.zeros((n, 1))
@@ -23,27 +26,27 @@ def Utris(U, b):
     return x
 
 
+# Algoritmul LTRIS
 def Ltris(L, b):
     n = len(L)
-    x = np.zeros((n, 1))
-
+    x = np.zeros(n)
     for i in range(n):
         s = b[i]
         for j in range(i):
-            s = s - L[i][j] * x[j]
-        x[i] = s / L[i][i]
+            s = s - L[i][j]*x[j]
+        x[i] = s/L[i][i]
     return x
 
-
-# alg de triangulatizare ortogonală cu reflectori
+# Alg de triangulatizare ortogonală cu reflectori
 def TORT(A):
     (m, n) = np.shape(A)
-    p = min(m - 1, n)
-    beta = np.zeros(p)
-    beta = beta.astype(float)
+    if m == n:
+        p = m
+    else:
+        p = min(m - 1, n)
 
-    U = np.zeros((m, p))
-    U = U.astype(float)
+    beta = np.zeros(p, dtype=float)
+    U = np.zeros((m, p), dtype=float)
 
     for k in range(p):
         sigma = np.sign(A[k][k]) * LA.norm(A[k:, k])
@@ -52,7 +55,7 @@ def TORT(A):
             beta[k] = 0
         else:
             U[k][k] = A[k][k] + sigma
-            # stocăm coeficienții vectorului uk pentru restul coloanei
+            # Stocam coeficienții vectorului uk pentru restul coloanei
             for i in range(k + 1, m):
                 U[i][k] = A[i][k]
 
@@ -73,50 +76,48 @@ def TORT(A):
 
                 for i in range(k, m):
                     A[i][j] = A[i][j] - tau * U[i][k]
+        # yield np.copy(A), np.copy(U), np.copy(beta)
 
     return A, U, beta
 
-#Se efectueaz˘a triangularizarea ortogonala la dreapta a matricei A, i.e. AZ = L, unde Z = Z1Z2...Zs, iar Zk sunt reflectori hermitici.
-def LQ(A, v):
+
+# Se efectueaza triangularizarea ortogonala la dreapta a matricei A, i.e. AZ = L, unde Z = Z1Z2...Zs, iar Zk sunt reflectori hermitici.
+def LQ(A_in):
+    A = np.copy(A_in)
     (m,n) = np.shape(A)
+    s = min(m,n)
+
     beta = np.zeros(s)
-    for k in range(1, m + 1):
-        beta[k] = 0
+    V = np.zeros((s,n))
 
-        # Dacă k < n
-        if k < n:
-            # Pasul 2: Se definește σ
-            σ = A[k-1, k-1:n]  # Elementele de pe linia k, coloanele k până la n
-            
-            # Pasul 3: Dacă σ = 0
-            if np.all(σ == 0):
-                # Dacă akk = 0
-                if A[k-1, k-1] == 0:
-                    σ = np.abs(A[k-1, k-1])  # Folosim valoarea absolută
-                else:
-                    σ = np.abs(A[k-1, k-1])  # Restabilim valoarea
+    for k in range(s):
+        if(k<n):
+            sigma = np.sign(A[k][k])*LA.norm(A[k,k:])
+            if (sigma!=0): 
+                print(sigma)
+                print(A[k,k:])
+                print(A[k,k:]/sigma)
+                V[k,k:] = A[k,k:]/sigma
+                V[k][k] = 1 + V[k][k]
+                beta[k] = V[k][k] 
 
-            # Actualizăm akj și vkj
-            for j in range(k-1, n):
-                A[k-1, j] = A[k-1, j] / σ  # Normalizare a akj
-                v[k-1, j] = A[k-1, j]  # Actualizare vkj
+                for j in range(k+1,n):
+                    A[k][j] = 0
 
-            # Pasul 4: Setăm βk
-            βk = 1 + A[k-1, k-1]
+                for i in range(k+1,m):
+                    alpha = 0
+                    for j in range(k,n):
+                        alpha += A[i][j]*V[k][j]
+                    alpha = (-1)*alpha/beta[k]
 
-            # Pasul 5: Iterație pentru i = k+1 până la m
-            for i in range(k, m):
-                # Calculăm α
-                α = - np.sum(A[i, k-1:n] * v[k-1, k-1:n]) / βk
+                    for j in range(k,n):
+                        A[i][j] += alpha*V[k][j]
 
-                # Actualizăm elementele aij
-                for j in range(k-1, n):
-                    A[i, j] += α * v[k-1, j]
+                A[k][k] = (-1)*sigma
+    #print("din funcție")
+    #print(A)
+    return A,V,beta
 
-            # Pasul 6: Actualizăm akk
-            A[k-1, k-1] = -np.abs(σ)
-
-    return A, v
 
 # CMMP pentru un sistem supradeterminat m > n
 def CMMP_supradeterminat(A, b):
@@ -138,22 +139,84 @@ def CMMP_supradeterminat(A, b):
 
 # CMMP pentru sistem subdeterminat m < n
 def CMMP_subdeterminat(A, b):
+    A_copy = np.copy(A)
     (m, n) = np.shape(A)
-    x = np.zeros(n)
-    for k in range(m):
-        x[k] = Ltris(A, b)
+    (R, U, beta) = TORT(np.transpose(A))
+    
+    R_tr = np.transpose(R)
+    print(R_tr[:, :m])
 
-    x[m:n] = 0
+    y = Ltris(R_tr[:, :m], b)
+    print(y)
 
-    for k in range(m, 0, -1):
-        t = A[k - 1][k - 1]  # Salvam valoarea inițială a akk
-        A[k - 1][k - 1] = v[k - 1]  # Setam akk la valoarea βk
-        alpha = -np.sum([v[k - 1] * x[j - 1] for j in range(k, n)]) / v[k - 1]
+    y = np.append(y, np.zeros(n - m).astype(float))
+    for k in range(m, -1, -1):
+        tau = 0
+        for i in range(k, n):
 
-        # Actualizarea valorilor din x
-        for j in range(k - 1, n):
-            x[j] += alpha * v[k - 1]
+            test = U[i][k]
+            # print(y[i])
+            tau += U[i][k] * y[i]
+        tau = tau / beta[k]
 
-        A[k - 1][k - 1] = t  # Restauram valoarea inițială a akk
+        # print(tau)
+        for i in range(k, n):
+            y[i] = y[i] - tau * U[i][k]
 
+    x = y
     return x
+
+
+class LTSQ_Visualization(QMainWindow):
+    def __init__(self, matrix):
+        super().__init__()
+        self.setWindowTitle("Soluția CMMP")
+        self.setGeometry(100, 100, 800, 600)
+        self.matrix = matrix
+
+        # Interfață principală
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+        self.layout = QVBoxLayout()
+        self.central_widget.setLayout(self.layout)
+
+        self.label = QLabel("Apasă pe buton pentru a calcula soluția.")
+        self.layout.addWidget(self.label)
+        
+        self.label = QLabel("Matricea introdusa initial.")
+        self.layout.addWidget(self.label)
+        
+
+        self.table = QTableWidget()
+        self.layout.addWidget(self.table)
+
+        self.button = QPushButton("Calculează CMMP")
+        self.button.clicked.connect(self.calculate_cmmp)
+        self.layout.addWidget(self.button)
+
+    def calculate_cmmp(self):
+        # Generare matrice A și vector b
+        A = self.matrix
+        b = rng.random(5)
+
+        # Calcul CMMP
+        x = CMMP_supradeterminat(A, b)
+
+        # Afișare rezultate în tabel
+        self.display_solution(x)
+
+    def display_solution(self, x):
+        self.table.setRowCount(len(x))
+        self.table.setColumnCount(1)
+        self.table.setHorizontalHeaderLabels(["Soluție CMMP"])
+
+        for i, value in enumerate(x):
+            item = QTableWidgetItem(f"{value[0]:.6f}")
+            self.table.setItem(i, 0, item)
+
+
+# if __name__ == "__main__":
+#     app = QApplication(sys.argv)
+#     window = CMMPApp()
+#     window.show()
+#     sys.exit(app.exec())

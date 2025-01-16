@@ -173,8 +173,8 @@ class QRVisualization(QMainWindow):
             self.step_label.setText("Algorithm complete!")
             self.next_button.setEnabled(False)
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = QRVisualization()
-    window.show()
-    sys.exit(app.exec())
+# if __name__ == "__main__":
+#     app = QApplication(sys.argv)
+#     window = QRVisualization()
+#     window.show()
+#     sys.exit(app.exec())

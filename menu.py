@@ -18,6 +18,7 @@ class MainMenu(QMainWindow):
 
         lstsq = QPushButton("Least Squares Solver")
         lstsq.clicked.connect(self.open_ltsq_input)
+
         lstsq.setStyleSheet("padding: 10px;")
         kzmr = QPushButton("Kaczmarz vs QR factorization")
         kzmr.setStyleSheet("padding: 10px;")
