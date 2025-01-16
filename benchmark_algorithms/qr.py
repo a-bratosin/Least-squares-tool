@@ -98,8 +98,10 @@ def CMMP_overdetermined(A, b):
     return x,t1
 
 
-def CMMP_underdetermined(A, b):
-    A_copy = np.copy(A)
+def CMMP_underdetermined(A_orig, b_orig):
+    A = np.copy(A_orig)
+    b = np.copy(b_orig)
+
     t0 = timeit.default_timer()
     (m,n) = np.shape(A)
     # pentru a determina soluția în sens CMMP la cazul nedeterminat, trebuie să calculăm factorizarea QR a matricei A transpus
@@ -114,24 +116,24 @@ def CMMP_underdetermined(A, b):
     # eliminăm coloanele n+1,m ale matricei, care sunt nule
     # rămânem cu un R' inf triunghiular cu dimensiunea nxn
     R_tr = np.transpose(R)
-    print(R_tr[:,:m])
+    #print(R_tr[:,:m])
 
     y = Ltris(R_tr[:,:m],b)
 
     # acum a mai rămas de rezolvat sistemul Qtr*x=y, care este ac. lucru cu Q*x = y, Q fiind simetrică
     # aplicăm Q la dreapta, și obținem x* = Q*y
     # deci aplicăm pe când efectul matricilor Householder vectorului y
-    print(y)
+    #print(y)
 
    
     y = np.append(y,np.zeros(n-m).astype(float))
-    print(y)
+    #print(y)
 
-    print("\n\n----y real----\n\n")
-    print(np.append(LA.inv(R_tr[:,:m])@b, np.zeros(n-m).astype(float)))
+    #print("\n\n----y real----\n\n")
+    #print(np.append(LA.inv(R_tr[:,:m])@b, np.zeros(n-m).astype(float)))
 
     
-    print(np.shape(U))
+    #print(np.shape(U))
     for k in range(m,-1,-1):
         tau = 0
         for i in range(k,n):

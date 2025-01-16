@@ -41,9 +41,9 @@ def LQ(A_in):
         if(k<n):
             sigma = np.sign(A[k][k])*LA.norm(A[k,k:])
             if (sigma!=0): 
-                print(sigma)
-                print(A[k,k:])
-                print(A[k,k:]/sigma)
+                #print(sigma)
+                #print(A[k,k:])
+                #print(A[k,k:]/sigma)
                 V[k,k:] = A[k,k:]/sigma
                 V[k][k] = 1 + V[k][k]
                 beta[k] = V[k][k] 
@@ -115,6 +115,7 @@ def CMMP_underdetermined(A_orig, b_orig):
     b = np.copy(b_orig)
 
     (m, n) = np.shape(A)
+    t0 = timeit.default_timer()
     #(R, U, beta) = TORT(np.transpose(A))
     (L,V,beta) = LQ(A)
     
@@ -140,17 +141,21 @@ def CMMP_underdetermined(A_orig, b_orig):
         for j in range(k,n):
             y[j] = y[j] + alpha*V[k][j]
 
+        V[k][k] = t
+
+    t1 = timeit.default_timer() - t0
     x = y
-    return x
+
+    return x,t1
 
 
-
+"""
 m = 4
 n = 6
 A =  rng.integers(-10,10, size=(m,n))
 A = A.astype(float)
 b = rng.integers(-10,10, size=m).astype(float)
-
+"""
 """
 A_copy = np.copy(A)
 
@@ -175,7 +180,7 @@ print(np.transpose(R_test))
 
 """
 
-
+"""
 sol_lstsq = LA.lstsq(A,b)[0]
 
 sol_lq = CMMP_underdetermined(A,b)
@@ -185,3 +190,4 @@ print(sol_lstsq)
 
 print("\n\n\nsol prin LQ")
 print(sol_lq)
+"""
