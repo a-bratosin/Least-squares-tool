@@ -65,12 +65,93 @@ def LQ(A_in):
     #print(A)
     return A,V,beta
 
+# Alg de triangulatizare ortogonală cu reflectori
+def TORT(A):
+    (m, n) = np.shape(A)
+    if m == n:
+        p = m
+    else:
+        p = min(m - 1, n)
+
+    beta = np.zeros(p, dtype=float)
+    U = np.zeros((m, p), dtype=float)
+
+    for k in range(p):
+        sigma = np.sign(A[k][k]) * LA.norm(A[k:, k])
+
+        if sigma == 0:
+            beta[k] = 0
+        else:
+            U[k][k] = A[k][k] + sigma
+            # Stocam coeficienții vectorului uk pentru restul coloanei
+            for i in range(k + 1, m):
+                U[i][k] = A[i][k]
+
+            beta[k] = sigma * U[k][k]
+            A[k][k] = -sigma
+
+            #
+            for i in range(k + 1, m):
+                A[i][k] = 0
+
+            for j in range(k + 1, n):
+                tau = 0
+
+                for i in range(k, m):
+                    tau += U[i][k] * A[i][j]
+
+                tau = tau / beta[k]
+
+                for i in range(k, m):
+                    A[i][j] = A[i][j] - tau * U[i][k]
+        # yield np.copy(A), np.copy(U), np.copy(beta)
+
+    return A, U, beta
+
+
+# CMMP pentru sistem subdeterminat m < n
+def CMMP_underdetermined(A_orig, b_orig):
+    A = np.copy(A_orig)
+    b = np.copy(b_orig)
+
+    (m, n) = np.shape(A)
+    #(R, U, beta) = TORT(np.transpose(A))
+    (L,V,beta) = LQ(A)
+    
+    #R_tr = np.transpose(R)
+    #print(R_tr[:, :m])
+
+    y = Ltris(L[:, :m], b)
+    #print(y)
+
+    
+    
+    
+    y = np.append(y, np.zeros(n - m).astype(float))
+    for k in range(m-1, -1, -1):
+        t = V[k][k]
+        V[k][k] = beta[k]
+
+        alpha = 0
+        for j in range(k,n):
+            alpha = alpha + V[k][j]*y[j]
+        alpha = (-1)*alpha/beta[k]
+
+        for j in range(k,n):
+            y[j] = y[j] + alpha*V[k][j]
+
+    x = y
+    return x
+
+
+
 m = 4
 n = 6
 A =  rng.integers(-10,10, size=(m,n))
 A = A.astype(float)
 b = rng.integers(-10,10, size=m).astype(float)
 
+"""
 A_copy = np.copy(A)
 
 (L,V,beta) = LQ(A_copy)
@@ -91,3 +172,16 @@ print(V)
 
 (Q_test, R_test) = LA.qr(np.transpose(A), mode="complete")
 print(np.transpose(R_test))
+
+"""
+
+
+sol_lstsq = LA.lstsq(A,b)[0]
+
+sol_lq = CMMP_underdetermined(A,b)
+
+print("Sol prin lstsq")
+print(sol_lstsq)
+
+print("\n\n\nsol prin LQ")
+print(sol_lq)

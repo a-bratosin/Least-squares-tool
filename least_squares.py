@@ -138,30 +138,36 @@ def CMMP_supradeterminat(A, b):
 
 
 # CMMP pentru sistem subdeterminat m < n
-def CMMP_subdeterminat(A, b):
-    A_copy = np.copy(A)
+# CMMP pentru sistem subdeterminat m < n
+def CMMP_subdeterminat(A_orig, b_orig):
+    A = np.copy(A_orig)
+    b = np.copy(b_orig)
+
     (m, n) = np.shape(A)
-    (R, U, beta) = TORT(np.transpose(A))
+    #(R, U, beta) = TORT(np.transpose(A))
+    (L,V,beta) = LQ(A)
     
-    R_tr = np.transpose(R)
-    print(R_tr[:, :m])
+    #R_tr = np.transpose(R)
+    #print(R_tr[:, :m])
 
-    y = Ltris(R_tr[:, :m], b)
-    print(y)
+    y = Ltris(L[:, :m], b)
+    #print(y)
 
+    
+    
+    
     y = np.append(y, np.zeros(n - m).astype(float))
-    for k in range(m, -1, -1):
-        tau = 0
-        for i in range(k, n):
+    for k in range(m-1, -1, -1):
+        t = V[k][k]
+        V[k][k] = beta[k]
 
-            test = U[i][k]
-            # print(y[i])
-            tau += U[i][k] * y[i]
-        tau = tau / beta[k]
+        alpha = 0
+        for j in range(k,n):
+            alpha = alpha + V[k][j]*y[j]
+        alpha = (-1)*alpha/beta[k]
 
-        # print(tau)
-        for i in range(k, n):
-            y[i] = y[i] - tau * U[i][k]
+        for j in range(k,n):
+            y[j] = y[j] + alpha*V[k][j]
 
     x = y
     return x
