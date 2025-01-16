@@ -17,7 +17,7 @@ def select_partition(A):
     J = []
     for k in range(tau-1):
         new_block = A[k*10:((k+1)*10),:]
-        print(new_block)
+        #print(new_block)
         J.append(new_block)
     
     # deoarece împărțirea la 10 o să aibă mai mereu rest, îi dau ultimei matrici liniile din rest
@@ -33,7 +33,7 @@ def select_distribution(J,A):
     distribution = np.zeros(tau)
 
     for k in range(tau):
-        print(k)
+        #print(k)
         distribution[k] = LA.norm(J[k])**2/LA.norm(A)**2
     
     return distribution
@@ -113,6 +113,7 @@ for distribution in distributions:
 print(sum)
    """ 
 
+"""
 A_test = 100*np.random.rand(405,600)
 print(A_test)
 x_generate = 100*np.random.rand(600)
@@ -123,3 +124,4 @@ least_sq = LA.lstsq(A_test,b_test)[0]
 
 sol,time = RBK(A_test,b_test,least_sq,1e-7)
 print(sol)
+"""
