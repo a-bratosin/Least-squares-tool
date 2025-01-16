@@ -91,7 +91,8 @@ def RBK(A, b, target, tol):
         print(e)
         #print(x)
 
-    return x
+    t1 = timeit.default_timer() -t0
+    return x,t1
         
 
 
@@ -114,7 +115,7 @@ print(sum)
 
 A_test = 100*np.random.rand(400,600)
 print(A_test)
-x_generate = 100*np.random.rand(600)
+x_generate,time = 100*np.random.rand(600)
 
 b_test = A_test@x_generate
 
