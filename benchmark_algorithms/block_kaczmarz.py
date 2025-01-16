@@ -88,7 +88,7 @@ def RBK(A, b, target, tol):
         #print(np.shape(target))
         e =  LA.norm(x-y)
         x=y
-        print(e)
+        #print(e)
         #print(x)
 
     t1 = timeit.default_timer() -t0
@@ -113,13 +113,13 @@ for distribution in distributions:
 print(sum)
    """ 
 
-A_test = 100*np.random.rand(400,600)
+A_test = 100*np.random.rand(405,600)
 print(A_test)
-x_generate,time = 100*np.random.rand(600)
+x_generate = 100*np.random.rand(600)
 
 b_test = A_test@x_generate
 
 least_sq = LA.lstsq(A_test,b_test)[0]
 
-sol = RBK(A_test,b_test,least_sq,1e-7)
+sol,time = RBK(A_test,b_test,least_sq,1e-7)
 print(sol)
