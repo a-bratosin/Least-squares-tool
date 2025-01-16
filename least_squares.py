@@ -9,6 +9,7 @@ from PyQt6.QtWidgets import (
     QWidget,
     QTableWidget,
     QTableWidgetItem,
+    QHBoxLayout,
 )
 import sys
 
@@ -168,11 +169,10 @@ def CMMP_subdeterminat(A, b):
 
 
 class LTSQ_Visualization(QMainWindow):
-    def __init__(self, matrix):
+    def __init__(self, matrix, b):
         super().__init__()
         self.setWindowTitle("Soluția CMMP")
         self.setGeometry(100, 100, 800, 600)
-        self.matrix = matrix
 
         # Interfață principală
         self.central_widget = QWidget()
@@ -180,43 +180,78 @@ class LTSQ_Visualization(QMainWindow):
         self.layout = QVBoxLayout()
         self.central_widget.setLayout(self.layout)
 
-        self.label = QLabel("Apasă pe buton pentru a calcula soluția.")
+        # Label pentru instrucțiuni
+        self.label = QLabel("Solutia problemei celor mai mici patrate:")
         self.layout.addWidget(self.label)
+
+        # Tabele pentru A, b și soluție
+        self.matrix_table = QTableWidget()
+        self.vector_table = QTableWidget()
+        self.solution_table = QTableWidget()
+        self.layout.addWidget(self.matrix_table)
+        self.layout.addWidget(self.vector_table)
+        self.layout.addWidget(self.solution_table)
+
+        # Butoane
+        self.solve_button = QPushButton("Calculează CMMP")
+        self.solve_button.clicked.connect(self.calculate_cmmp)
+
+        self.layout.addWidget(self.solve_button)
         
-        self.label = QLabel("Matricea introdusa initial.")
-        self.layout.addWidget(self.label)
+
+        # Datele matricei și vectorului
+        self.A = matrix
+        self.b = b
+
+        self.display_matrix(self.A, self.matrix_table, "Matricea A introdusa:")
+        self.display_vector(self.b, self.vector_table, "b")
         
-
-        self.table = QTableWidget()
-        self.layout.addWidget(self.table)
-
-        self.button = QPushButton("Calculează CMMP")
-        self.button.clicked.connect(self.calculate_cmmp)
-        self.layout.addWidget(self.button)
-
+        
     def calculate_cmmp(self):
-        # Generare matrice A și vector b
-        A = self.matrix
-        b = rng.random(5)
-
+        (m, n) = np.shape(self.A)
         # Calcul CMMP
-        x = CMMP_supradeterminat(A, b)
+        b_copy = self.b.copy()
+        z, residuals, rank, s = np.linalg.lstsq(self.A, b_copy, rcond=None)
+        print("---z---")
+        print(z)
+        print(self.A @ z)
+        
+        
+        if (m >= n):
+            x = CMMP_supradeterminat(self.A, b_copy)
+        else:
+            x = CMMP_subdeterminat(self.A, b_copy)
 
-        # Afișare rezultate în tabel
-        self.display_solution(x)
+        
+        # Afișare soluție în tabel
+        self.display_vector(x.flatten(), self.solution_table, "Soluție CMMP")
+        print("----x---")
+        print(self.A @ x)
+        
 
-    def display_solution(self, x):
-        self.table.setRowCount(len(x))
-        self.table.setColumnCount(1)
-        self.table.setHorizontalHeaderLabels(["Soluție CMMP"])
+    def display_matrix(self, matrix, table_widget, header):
+        rows, cols = matrix.shape
+        table_widget.setRowCount(rows)
+        table_widget.setColumnCount(cols)
+        table_widget.setHorizontalHeaderLabels([f"{j+1}" for j in range(cols)])
+        table_widget.setVerticalHeaderLabels([f"{i+1}" for i in range(rows)])
 
-        for i, value in enumerate(x):
-            item = QTableWidgetItem(f"{value[0]:.6f}")
-            self.table.setItem(i, 0, item)
+        for i in range(rows):
+            for j in range(cols):
+                item = QTableWidgetItem(f"{matrix[i, j]:.6f}")
+                table_widget.setItem(i, j, item)
 
+        table_widget.setWindowTitle(header)
 
-# if __name__ == "__main__":
-#     app = QApplication(sys.argv)
-#     window = CMMPApp()
-#     window.show()
-#     sys.exit(app.exec())
+    def display_vector(self, vector, table_widget, header):
+        rows = len(vector)
+        table_widget.setRowCount(rows)
+        table_widget.setColumnCount(1)
+        table_widget.setHorizontalHeaderLabels([header])
+        table_widget.setVerticalHeaderLabels([f"{i+1}" for i in range(rows)])
+
+        for i in range(rows):
+            item = QTableWidgetItem(f"{vector[i]:.6f}")
+            table_widget.setItem(i, 0, item)
+
+        table_widget.setWindowTitle(header)
