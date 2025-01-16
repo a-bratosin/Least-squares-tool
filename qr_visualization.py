@@ -12,10 +12,6 @@ from PyQt6.QtWidgets import (
 )
 import numpy.linalg as LA
 
-
-rng = np.random.default_rng(0)
-
-
 # Algoritmul UTRIS
 def Utris(U, b):
     n = len(U)
