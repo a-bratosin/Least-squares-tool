@@ -46,8 +46,8 @@ To run this project, ensure you have the following modules installed:
 1. Clone this repository to your local machine:
 
     ```bash
-        git clone git@github.com:a-bratosin/Least-squares-tool.git   # Via ssh
-        cd Least-squares-tool
+    git clone git@github.com:a-bratosin/Least-squares-tool.git   # Via ssh
+    cd Least-squares-tool
     ```
 
 1. Create a virtual environment (optional but recommended)
