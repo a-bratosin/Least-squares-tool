@@ -36,18 +36,26 @@ class MainMenu(QMainWindow):
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
+        self.qr_window = None
+        self.ltsq_window = None
 
     def open_qr_input(self):
         self.hide()
 
-        w = QRInputWindow()
-        w.show()
-        
+        self.qr_window = QRInputWindow()
+        self.qr_window.show()
+        self.qr_window.destroyed.connect(self.show_main_menu)
+
     def open_ltsq_input(self):
         self.hide()
 
-        w2 = LtsqInputWindow()
-        w2.show()
+        self.ltsq_window = LtsqInputWindow()
+        self.ltsq_window.show()
+        self.ltsq_window.destroyed.connect(self.show_main_menu)
+
+    def show_main_menu(self):
+        self.show()
+
 
     def open_graph(self):
         lstsq_row_sizes = joblib.load("benchmark_algorithms/benchmark/lstsq/lstsq_rows.pkl")
