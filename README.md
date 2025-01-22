@@ -7,7 +7,7 @@ This project provides a Python-based graphical user interface (GUI) to visualize
 - **Least Squares Problem Solution**  
 - **Comparison of the Kaczmarz Algorithm with QR and Least Squares**
 
-The application is built using **PyQt5**, along with **NumPy**, **joblib**, and **timeit** for backend computations.
+The application is built using **PyQt5**, along with **NumPy**, **joblib**, **matplotlib** and **timeit** for backend computations.
 
 ---
 
@@ -37,8 +37,9 @@ To run this project, ensure you have the following modules installed:
 
 - **PyQt5**: For building the graphical user interface.  
 - **NumPy**: For numerical computations.  
-- **joblib**: For efficient saving and loading of data.  
-- **timeit**: For performance benchmarking.  
+- **Joblib**: For efficient saving and loading of data.  
+- **timeit**: For performance benchmarking.
+- **Matplotlib**: For creating visual representations of algorithm performance
 
 ### Steps to Set Up
 
@@ -59,7 +60,7 @@ To run this project, ensure you have the following modules installed:
 1. Install dependencies
 
     ```bash
-    pip install PyQt5 numpy joblib timeit
+    pip install PyQt5 numpy joblib timeit matplotlib
     ```
 
 1. Run the program
